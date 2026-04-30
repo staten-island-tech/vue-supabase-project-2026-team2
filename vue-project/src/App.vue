@@ -2,15 +2,15 @@
 import { ref, onMounted } from 'vue'
 import { supabase } from './supabase'
 
-const posts = ref([])
+const profiles = ref([])
 const error = ref(null)
 
 onMounted(async () => {
-  let { data: postData, error: err } = await supabase.from('posts').select('*')
+  let { data: profileData, error: err } = await supabase.from('profiles').select('*')
   if (err) {
     error.value = err.message
   } else {
-    posts.value = postData
+    profiles.value = profileData
   }
 })
 </script>
