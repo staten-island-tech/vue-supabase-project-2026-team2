@@ -8,4 +8,7 @@ import postCard from '@/components/postCard.vue'
 const post = ref([])
 </script>
 
-<style scoped></style>
+<style scoped>
+.container {
+}
+</style>
