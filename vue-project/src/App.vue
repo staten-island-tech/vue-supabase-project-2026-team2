@@ -1,9 +1,11 @@
-<template><RouterView /></template>
+<template>
+  <div></div>
+  <RouterView />
+</template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { supabase } from './supabase'
-import postCard from '@/components/postCard.vue'
 
 const profiles = ref([])
 const error = ref(null)

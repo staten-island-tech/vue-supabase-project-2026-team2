@@ -12,5 +12,8 @@ const post = ref([])
 .container {
   flex-direction: row;
   flex-wrap: wrap;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 </style>
