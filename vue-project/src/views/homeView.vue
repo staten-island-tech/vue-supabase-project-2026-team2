@@ -10,5 +10,7 @@ const post = ref([])
 
 <style scoped>
 .container {
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 </style>
