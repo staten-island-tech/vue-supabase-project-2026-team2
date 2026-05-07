@@ -1,9 +1,27 @@
 <template>
-  <div></div>
+  <div>
+    <ul>
+      <li v-for="profile in profiles" :key="profile.id">{{ profile.id }}</li>
+    </ul>
+  </div>
   <RouterView />
 </template>
 
 <script setup>
+/* import { ref, onMounted } from 'vue'
+import { supabase } from '../utils/supabase'
+
+const todos = ref([])
+
+async function getTodos() {
+  const { data } = await supabase.from('todos').select()
+  todos.value = data
+}
+
+onMounted(() => {
+  getTodos()
+})
+ */
 import { ref, onMounted } from 'vue'
 import { supabase } from './supabase'
 
