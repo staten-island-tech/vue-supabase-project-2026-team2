@@ -1,4 +1,23 @@
+<<<<<<< Updated upstream
 <template><RouterView /></template>
+=======
+<template>
+  <div>
+    <p v-if="error">Error: {{ error }}</p>
+    <ul v-else>
+      <li v-for="post in posts" :key="post.id">
+        ID: {{ post.id }} | User: {{ post.user_id }} | ...
+      </li>
+    </ul>
+    <div v-for="profile in profiles" :key="profile.id">
+      <p>{{ profile.username }}</p>
+      <p>{{ profile.password }}</p>
+      <p>{{ profile.profilePicture }}</p>
+    </div>
+  </div>
+  <RouterView />
+</template>
+>>>>>>> Stashed changes
 
 <script setup>
 import { ref, onMounted } from 'vue'
