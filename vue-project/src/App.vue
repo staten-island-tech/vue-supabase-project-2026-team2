@@ -1,23 +1,38 @@
-<<<<<<< Updated upstream
-<template><RouterView /></template>
-=======
 <template>
-  <div>
+  <!-- <div>
     <p v-if="error">Error: {{ error }}</p>
-    <ul v-else>
-      <li v-for="post in posts" :key="post.id">
-        ID: {{ post.id }} | User: {{ post.user_id }} | ...
-      </li>
-    </ul>
     <div v-for="profile in profiles" :key="profile.id">
       <p>{{ profile.username }}</p>
       <p>{{ profile.password }}</p>
       <p>{{ profile.profilePicture }}</p>
     </div>
   </div>
-  <RouterView />
+  <RouterView /> -->
+
+  <div>
+    <p v-if="error">Error: {{ error }}</p>
+
+    <div v-else>
+      <pre>{{ profiles }}</pre>
+
+      <div v-for="profile in profiles" :key="profile.id" class="profile-card">
+        <p>{{ profile }}</p>
+        <p><strong>Username:</strong> {{ profile.username }}</p>
+        <p><strong>Password:</strong> {{ profile.password }}</p>
+        console.log(profile)
+
+        <img
+          v-if="profile.profile_picture"
+          :src="profile.profile_picture"
+          alt="Profile Picture"
+          width="120"
+        />
+      </div>
+    </div>
+
+    <RouterView />
+  </div>
 </template>
->>>>>>> Stashed changes
 
 <script setup>
 import { ref, onMounted } from 'vue'
