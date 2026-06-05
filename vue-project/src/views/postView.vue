@@ -11,7 +11,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { supabase } from './supabase'
+import { useCounterStore } from '@/stores/counter.js'
 import postCard from '@/components/postCard.vue'
+const store = useCounterStore()
 const posts = ref([])
 const error = ref(null)
 onMounted(async () => {

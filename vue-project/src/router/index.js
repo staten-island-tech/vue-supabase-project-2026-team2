@@ -3,6 +3,7 @@ import homeView from '@/views/homeView.vue'
 import loginView from '@/views/loginView.vue'
 import registerView from '@/views/registerView.vue'
 import profileView from '@/views/profileView.vue'
+import postView from '@/views/postView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -10,7 +11,9 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: homeView,
+      meta: { requiresAuth: true },
     },
+    { path: '*', redirect: '/login' },
     {
       path: '/login',
       name: 'login',
@@ -25,6 +28,11 @@ const router = createRouter({
       path: '/profile/:user_id',
       name: 'profile',
       component: profileView,
+    },
+    {
+      path: '/post/:id',
+      name: 'post',
+      component: postView,
     },
   ],
 })

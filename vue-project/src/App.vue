@@ -1,38 +1,27 @@
-<template>
-  <div>
-    <p v-if="error">Error: {{ error }}</p>
-    <ul v-else>
-      <li v-for="profile in profiles" :key="profile.id">
-        ID: {{ profile.id }} | User: {{ profile.user_id }} | ...
-      </li>
-    </ul>
-  </div>
-  <RouterView />
-</template>
-
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
+import Account from './components/Account.vue'
+import Auth from './components/Auth.vue'
 import { supabase } from './supabase'
 
-const profiles = ref([])
-const error = ref(null)
+const claims = ref()
 
-onMounted(async () => {
-  let { data: profileData, error: err } = await supabase.from('profiles').select('*')
+onMounted(() => {
+  supabase.auth.getClaims().then(({ data }) => {
+    claims.value = data.claims
+  })
 
-  console.log('profileData:', profileData)
-  console.log('err:', err)
-
-  if (err) {
-    error.value = err.message
-  } else {
-    profiles.value = profileData
-  }
+  supabase.auth.onAuthStateChange(async () => {
+    const { data } = await supabase.auth.getClaims()
+    claims.value = data.claims
+  })
 })
-const {
-  data: { session },
-} = await supabase.auth.getSession()
-console.log('session:', session) // null if not logged in
 </script>
 
-<style scoped></style>
+<template>
+  <div class="container" style="padding: 50px 0 100px 0">
+    <Account v-if="claims" :claims="claims" />
+    <Auth v-else />
+  </div>
+</template>
+https://supabase.com/docs/guides/getting-started/tutorials/with-vue-3
