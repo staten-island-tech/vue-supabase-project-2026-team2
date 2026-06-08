@@ -24,4 +24,3 @@ onMounted(() => {
     <Auth v-else />
   </div>
 </template>
-https://supabase.com/docs/guides/getting-started/tutorials/with-vue-3

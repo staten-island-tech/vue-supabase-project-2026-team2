@@ -1,30 +1,38 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import homeView from '@/views/homeView.vue'
+import Account from '@/components/Account.vue'
+import Auth from '@/components/Auth.vue'
+import Avatar from '@/components/Avatar.vue'
+/* import homeView from '@/views/homeView.vue'
 import loginView from '@/views/loginView.vue'
-import registerView from '@/views/registerView.vue'
-import profileView from '@/views/profileView.vue'
-import postView from '@/views/postView.vue'
+import registerView from '../../../old/registerView.vue'
+import profileView from '../../../old/profileView.vue'
+import postView from '../../../old/postView.vue' */
+
+function isAuthenticated() {
+  // Replace with your real auth check (e.g., token in localStorage, Vuex store, Pinia, etc.)
+  return !!localStorage.getItem('authToken')
+}
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: homeView,
+      name: 'Home',
+      component: Account,
       meta: { requiresAuth: true },
     },
-    { path: '*', redirect: '/login' },
     {
       path: '/login',
-      name: 'login',
-      component: loginView,
+      name: 'Login',
+      component: Auth,
     },
     {
-      path: '/register',
-      name: 'register',
-      component: registerView,
+      path: '/addProfile',
+      name: 'Register',
+      component: Avatar,
     },
-    {
+    /*  {
       path: '/profile/:user_id',
       name: 'profile',
       component: profileView,
@@ -33,8 +41,25 @@ const router = createRouter({
       path: '/post/:id',
       name: 'post',
       component: postView,
-    },
+    }, */
   ],
+})
+router.beforeEach(async (to, from) => {
+  if (
+    // make sure the user is authenticated
+    !isAuthenticated() &&
+    // ❗️ Avoid an infinite redirect
+    to.name !== 'Login'
+  ) {
+    // redirect the user to the login page
+    return { name: 'Login' }
+  }
+  // If already authenticated and trying to go to login, redirect to home
+  if (isAuthenticated() && to.name === 'Login') {
+    return { name: 'Home' }
+  }
+  // Allow navigation
+  return true
 })
 
 export default router

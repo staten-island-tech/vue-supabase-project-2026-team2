@@ -101,4 +101,5 @@ async function signOut() {
       <button class="button block" @click="signOut" :disabled="loading">Sign Out</button>
     </div>
   </form>
+  <RouterView />
 </template>

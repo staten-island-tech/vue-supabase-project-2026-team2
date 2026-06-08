@@ -39,4 +39,5 @@ const handleLogin = async () => {
       </div>
     </div>
   </form>
+  <RouterView />
 </template>

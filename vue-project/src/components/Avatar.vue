@@ -74,4 +74,5 @@ watch(path, () => {
       />
     </div>
   </div>
+  <RouterView />
 </template>
