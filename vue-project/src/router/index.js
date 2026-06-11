@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+/* import { useAuthStore } from '@/stores/auth.js' */
 import Account from '@/components/Account.vue'
 import Auth from '@/components/Auth.vue'
 import Avatar from '@/components/Avatar.vue'
@@ -32,6 +33,7 @@ const router = createRouter({
       name: 'Register',
       component: Avatar,
     },
+
     /*  {
       path: '/profile/:user_id',
       name: 'profile',
