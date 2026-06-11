@@ -1,43 +1,26 @@
-<template>
-  <div>
-    <p v-if="loading">Loading profiles...</p>
-
-    <p v-else-if="error">Error: {{ error }}</p>
-
-    <ul v-else-if="profiles.length">
-      <li v-for="profile in profiles" :key="profile.id">
-        ID: {{ profile.id }} | User: {{ profile.user_id }}
-      </li>
-    </ul>
-
-    <p v-else>No profiles found.</p>
-  </div>
-  <RouterView />
-</template>
-
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
+import Account from './components/Account.vue'
+import Auth from './components/Auth.vue'
 import { supabase } from './supabase'
 
-const profiles = ref([])
-const error = ref(null)
-const loading = ref(true) // Start with loading as true
+const claims = ref()
 
-onMounted(async () => {
-  try {
-    const { data: profileData, error: err } = await supabase.from('profiles').select('id, user_id')
+onMounted(() => {
+  supabase.auth.getClaims().then(({ data }) => {
+    claims.value = data.claims
+  })
 
-    if (err) throw err // Jump straight to the catch block if there's an error
-
-    profiles.value = profileData
-  } catch (err) {
-    error.value = err.message
-  } finally {
-    loading.value = false // Turn off loading whether it succeeded or failed
-  }
+  supabase.auth.onAuthStateChange(async () => {
+    const { data } = await supabase.auth.getClaims()
+    claims.value = data.claims
+  })
 })
 </script>
 
-<style scoped>
-/* Your styles here */
-</style>
+<template>
+  <div class="container" style="padding: 50px 0 100px 0">
+    <Account v-if="claims" :claims="claims" />
+    <Auth v-else />
+  </div>
+</template>

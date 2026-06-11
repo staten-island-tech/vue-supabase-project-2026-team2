@@ -10,3 +10,4 @@ app.use(createPinia())
 app.use(router)
 
 app.mount('#app')
+// https://supabase.com/docs/guides/getting-started/tutorials/with-vue-3
