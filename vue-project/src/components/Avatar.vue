@@ -1,3 +1,30 @@
+<template>
+  <div>
+    <img
+      v-if="src"
+      :src="src"
+      alt="Avatar"
+      class="avatar image"
+      :style="{ height: size + 'em', width: size + 'em' }"
+    />
+    <div v-else class="avatar no-image" :style="{ height: size + 'em', width: size + 'em' }" />
+
+    <div :style="{ width: size + 'em' }">
+      <label class="button primary block" for="single">
+        {{ uploading ? 'Uploading ...' : 'Upload' }}
+      </label>
+      <input
+        style="visibility: hidden; position: absolute"
+        type="file"
+        id="single"
+        accept="image/*"
+        @change="uploadAvatar"
+        :disabled="uploading"
+      />
+    </div>
+  </div>
+</template>
+
 <script setup>
 import { ref, toRefs, watch } from 'vue'
 import { supabase } from '../supabase'
@@ -49,30 +76,4 @@ watch(path, () => {
 })
 </script>
 
-<template>
-  <div>
-    <img
-      v-if="src"
-      :src="src"
-      alt="Avatar"
-      class="avatar image"
-      :style="{ height: size + 'em', width: size + 'em' }"
-    />
-    <div v-else class="avatar no-image" :style="{ height: size + 'em', width: size + 'em' }" />
-
-    <div :style="{ width: size + 'em' }">
-      <label class="button primary block" for="single">
-        {{ uploading ? 'Uploading ...' : 'Upload' }}
-      </label>
-      <input
-        style="visibility: hidden; position: absolute"
-        type="file"
-        id="single"
-        accept="image/*"
-        @change="uploadAvatar"
-        :disabled="uploading"
-      />
-    </div>
-  </div>
-  <RouterView />
-</template>
+<style scoped></style>

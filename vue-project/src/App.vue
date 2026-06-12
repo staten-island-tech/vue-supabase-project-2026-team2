@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import Account from './components/Account.vue'
-import Auth from './components/Auth.vue'
+import Login from './components/Login.vue'
 import { supabase } from './supabase'
 
 const claims = ref()
@@ -21,6 +21,6 @@ onMounted(() => {
 <template>
   <div class="container" style="padding: 50px 0 100px 0">
     <Account v-if="claims" :claims="claims" />
-    <Auth v-else />
+    <Login v-else />
   </div>
 </template>
