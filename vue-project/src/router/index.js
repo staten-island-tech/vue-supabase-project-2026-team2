@@ -1,16 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Account from '@/components/Account.vue'
-import Auth from '@/components/Auth.vue'
-import Avatar from '@/components/Avatar.vue'
-/* import homeView from '@/views/homeView.vue'
-import loginView from '@/views/loginView.vue'
-import registerView from '../../../old/registerView.vue'
-import profileView from '../../../old/profileView.vue'
-import postView from '../../../old/postView.vue' */
+import { useAuthStore } from '@/stores/auth'
+import Login from '@/components/Login.vue'
+import Register from '@/components/Register.vue'
+import Homepage from '@/components/Homepage.vue'
+import CreatePost from '@/components/createPost.vue'
 
-function isAuthenticated() {
-  // Replace with your real auth check (e.g., token in localStorage, Vuex store, Pinia, etc.)
-  return !!localStorage.getItem('authToken')
+async function isAuthenticated() {
+  const auth = useAuthStore()
+  if (!auth.user && !auth.session) {
+    await auth.init()
+  }
+  return !!auth.user
 }
 
 const router = createRouter({
@@ -19,46 +19,36 @@ const router = createRouter({
     {
       path: '/',
       name: 'Home',
-      component: Account,
+      component: Homepage,
       meta: { requiresAuth: true },
     },
     {
       path: '/login',
       name: 'Login',
-      component: Auth,
+      component: Login,
     },
     {
-      path: '/addProfile',
+      path: '/register',
       name: 'Register',
-      component: Avatar,
-    },
-    /*  {
-      path: '/profile/:user_id',
-      name: 'profile',
-      component: profileView,
+      component: Register,
     },
     {
-      path: '/post/:id',
-      name: 'post',
-      component: postView,
-    }, */
+      path: '/create-post',
+      name: 'CreatePost',
+      component: CreatePost,
+      meta: { requiresAuth: true },
+    },
   ],
 })
-router.beforeEach(async (to, from) => {
-  if (
-    // make sure the user is authenticated
-    !isAuthenticated() &&
-    // ❗️ Avoid an infinite redirect
-    to.name !== 'Login'
-  ) {
-    // redirect the user to the login page
+router.beforeEach(async (to) => {
+  const auth = await isAuthenticated()
+
+  if (!auth && to.name !== 'Login' && to.name !== 'Register') {
     return { name: 'Login' }
   }
-  // If already authenticated and trying to go to login, redirect to home
-  if (isAuthenticated() && to.name === 'Login') {
+  if (auth && (to.name === 'Login' || to.name === 'Register')) {
     return { name: 'Home' }
   }
-  // Allow navigation
   return true
 })
 
