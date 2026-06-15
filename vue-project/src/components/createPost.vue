@@ -125,12 +125,6 @@ label {
   resize: vertical;
 }
 
-.input:focus {
-  outline: none;
-  border-color: #ca998f;
-  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
-}
-
 .input:disabled {
   background: #f5f5f5;
   cursor: not-allowed;

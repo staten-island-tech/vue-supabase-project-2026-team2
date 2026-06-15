@@ -1,19 +1,10 @@
 <template>
-  <form class="row flex-center flex" @submit.prevent="handleRegister">
-    <div class="col-6 form-widget">
+  <form @submit.prevent="startSignup">
+    <div class="container">
       <h1 class="header">Sign Up</h1>
-
       <div>
-        <input
-          class="input"
-          type="email"
-          placeholder="Your email"
-          v-model="email"
-          autocomplete="email"
-          required
-        />
+        <input class="input" type="email" placeholder="Your email" v-model="email" required />
       </div>
-
       <div>
         <input class="input" type="password" placeholder="Password" v-model="password" required />
       </div>
@@ -27,18 +18,16 @@
           required
         />
       </div>
-
       <div>
         <input
           type="submit"
-          class="button block"
+          class="button"
           :value="loading ? 'Creating...' : 'Create account'"
           :disabled="loading"
         />
       </div>
-
-      <div style="margin-top: 0.5rem">
-        <router-link class="button secondary block" :to="{ name: 'Login' }"> Sign in </router-link>
+      <div class="signIn">
+        <router-link class="button secondary" :to="{ name: 'Login' }"> Sign in </router-link>
       </div>
     </div>
   </form>
@@ -56,7 +45,7 @@ const password = ref('')
 const confirmPassword = ref('')
 const router = useRouter()
 
-const handleRegister = async () => {
+const startSignup = async () => {
   try {
     loading.value = true
 
@@ -77,10 +66,9 @@ const handleRegister = async () => {
         email: email.value,
         created_at: new Date().toISOString(),
       })
-      if (profileError) console.warn('Profile upsert error:', profileError.message)
+      if (profileError) console.warn('Profile error:', profileError.message)
       router.push({ name: 'Home' })
     } else {
-      alert('Confirm your account through your email.')
       router.push({ name: 'Login' })
     }
   } catch (err) {
@@ -113,7 +101,7 @@ form {
   padding: 40px 20px;
 }
 
-.form-widget {
+.container {
   width: 100%;
   max-width: 380px;
   background: white;
@@ -140,11 +128,8 @@ form {
   font-size: 14px;
 }
 
-.input:focus {
-  font-family: 'Cause', cursive;
-  outline: none;
-  border-color: #ca998f;
-  box-shadow: 0 0 0 3px #0066cc26;
+.signIn {
+  margin-top: 0.5rem;
 }
 
 .button {
@@ -158,11 +143,7 @@ form {
   cursor: pointer;
   transition: background 0.2s;
   text-align: center;
-}
-
-.button.block {
   display: block;
-  width: 100%;
 }
 
 .button.secondary {
