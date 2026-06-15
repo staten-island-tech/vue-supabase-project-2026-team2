@@ -1,64 +1,120 @@
+<template>
+  <div class="container">
+    <div class="header">
+      <h1>Homepage</h1>
+      <router-link :to="{ name: 'CreatePost' }" class="btn-create-post"> Create Post </router-link>
+    </div>
+  </div>
+
+  <div v-if="loading">Loading…</div>
+  <div v-else-if="errorMsg">{{ errorMsg }}</div>
+
+  <div v-else>
+    <article v-for="p in posts" :key="p.id" class="post-card">
+      <div>
+        <div class="timestamp">{{ new Date(p.createdAt).toLocaleString() }}</div>
+      </div>
+
+      <p class="caption">{{ p.caption }}</p>
+
+      <footer>
+        <div class="actions-row">
+          <button @click="toggleLike(p)" class="action-btn" :class="{ liked: p.isLiked }">
+            {{ p.isLiked ? '❤️' : '♥' }} {{ p.likesCount }} Like
+          </button>
+          <div>💬 {{ p.commentsCount }} Comment</div>
+        </div>
+      </footer>
+    </article>
+  </div>
+</template>
+
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
+import { useRoute } from 'vue-router'
 import { supabase } from '../supabase'
 
 const posts = ref([])
 const loading = ref(true)
 const errorMsg = ref('')
 const auth = useAuthStore()
+const route = useRoute()
 const currentUserId = computed(() => auth.user?.id)
 
 async function loadFeed() {
   loading.value = true
   errorMsg.value = ''
 
-  const { data, error } = await supabase
-    .from('posts')
-    .select(
-      `
-      id,
-      author_id,
-      caption,
-      media_url,
-      created_at,
-      profiles (
-        id,
-        username,
-        full_name,
-        avatar_url
-      ),
-      likes (
-        user_id
-      ),
-      comments (
-        author_id
-      )
-    `,
-    )
-    .order('created_at', { ascending: false })
+  try {
+    console.log('Fetching posts')
 
-  if (error) {
-    errorMsg.value = error.message
-    loading.value = false
-    return
-  }
+    const { data: simplePosts, error: simpleError } = await supabase
+      .from('posts')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-  posts.value = (data || []).map((row) => {
-    const userLike = (row.likes || []).find((like) => like.user_id === currentUserId.value)
-    return {
+    console.log('Query result:', { data: simplePosts, error: simpleError })
+
+    if (simpleError) {
+      errorMsg.value = `Error: ${simpleError.message}`
+      loading.value = false
+      return
+    }
+
+    if (!simplePosts || simplePosts.length === 0) {
+      errorMsg.value = 'No posts in database. Create one to get started!'
+      loading.value = false
+      return
+    }
+
+    console.log(`Fetching profiles...`)
+
+    const authorIds = [...new Set(simplePosts.map((p) => p.author_id).filter(Boolean))]
+    const { data: profiles } = await supabase.from('profiles').select('*').in('id', authorIds)
+
+    const profileMap = {}
+    profiles?.forEach((p) => {
+      profileMap[p.id] = p
+    })
+
+    const postIds = simplePosts.map((p) => p.id)
+    const { data: likes } = await supabase.from('likes').select('*').in('post_id', postIds)
+    const { data: comments } = await supabase.from('comments').select('*').in('post_id', postIds)
+
+    const likesMap = {}
+    const userLikesMap = {}
+    likes?.forEach((like) => {
+      if (!likesMap[like.post_id]) likesMap[like.post_id] = []
+      likesMap[like.post_id].push(like)
+      if (like.user_id === currentUserId.value) {
+        userLikesMap[like.post_id] = true
+      }
+    })
+
+    const commentsMap = {}
+    comments?.forEach((c) => {
+      if (!commentsMap[c.post_id]) commentsMap[c.post_id] = []
+      commentsMap[c.post_id].push(c)
+    })
+
+    posts.value = simplePosts.map((row) => ({
       id: row.id,
       caption: row.caption,
       createdAt: row.created_at,
-      author: row.profiles,
-      mediaUrl: row.media_url,
-      likesCount: (row.likes || []).length,
-      commentsCount: (row.comments || []).length,
-      isLiked: !!userLike,
-    }
-  })
+      author: profileMap[row.author_id] || { username: 'Unknown', full_name: 'Unknown User' },
+      likesCount: (likesMap[row.id] || []).length,
+      commentsCount: (commentsMap[row.id] || []).length,
+      isLiked: !!userLikesMap[row.id],
+    }))
 
-  loading.value = false
+    console.log('Final posts:', posts.value)
+  } catch (err) {
+    console.error('Error in loadFeed:', err)
+    errorMsg.value = `Error: ${err.message}`
+  } finally {
+    loading.value = false
+  }
 }
 
 async function toggleLike(post) {
@@ -85,112 +141,106 @@ async function toggleLike(post) {
 }
 
 onMounted(loadFeed)
+
+watch(
+  () => route.name,
+  () => {
+    if (route.name === 'Home' || route.name === 'DevHomepage') {
+      loadFeed()
+    }
+  },
+)
 </script>
 
-<template>
-  <div class="feed">
-    <div v-if="loading" class="status">Loading…</div>
-    <div v-else-if="errorMsg" class="status error">{{ errorMsg }}</div>
-
-    <div v-else class="post-list">
-      <article v-for="p in posts" :key="p.id" class="post-card">
-        <header class="post-header">
-          <img v-if="p.author?.avatar_url" :src="p.author.avatar_url" class="avatar" alt="avatar" />
-          <div>
-            <div class="username">{{ p.author?.username }}</div>
-            <div class="timestamp">{{ new Date(p.createdAt).toLocaleString() }}</div>
-          </div>
-        </header>
-
-        <div class="post-media">
-          <!-- TODO: replace with real media -->
-          <img v-if="p.mediaUrl" :src="p.mediaUrl" alt="post media" />
-          <div v-else class="placeholder">No media yet</div>
-        </div>
-
-        <p class="caption">{{ p.caption }}</p>
-
-        <footer class="post-actions">
-          <div class="actions-row">
-            <button @click="toggleLike(p)" class="action-btn" :class="{ liked: p.isLiked }">
-              {{ p.isLiked ? '❤️' : '♥' }} {{ p.likesCount }} Like
-            </button>
-            <span class="action-btn">💬 {{ p.commentsCount }} Comment</span>
-          </div>
-        </footer>
-      </article>
-    </div>
-  </div>
-</template>
-
 <style scoped>
-.feed {
+.dancing-script-<uniquifier > {
+  font-family: 'Dancing Script', cursive;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+}
+
+.cause-<uniquifier > {
+  font-family: 'Cause', cursive;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+}
+
+.container {
   max-width: 600px;
   margin: 0 auto;
 }
+
+.header {
+  font-family: 'Dancing Script', cursive;
+  background-color: rgb(255, 255, 255);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.btn-create-post {
+  font-family: 'Cause', cursive;
+  background: #ca998f;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
 .post-card {
+  background-color: rgb(248, 246, 244);
   border: 1px solid #eee;
   border-radius: 12px;
   padding: 12px;
   margin: 12px 0;
 }
-.post-header {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+
+.timestamp {
+  font-family: 'Cause', cursive;
+  font-size: 12px;
+  color: #888;
 }
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  object-fit: cover;
-}
-.username {
-  font-weight: 700;
-}
-.post-media img {
-  width: 100%;
-  border-radius: 10px;
+
+.caption {
+  font-family: 'Cause', cursive;
   margin-top: 10px;
+  font-size: 15px;
 }
-.placeholder {
-  background: #f6f6f6;
-  height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  margin-top: 10px;
-}
-.post-actions {
-  margin-top: 10px;
-}
+
 .actions-row {
   display: flex;
   gap: 15px;
   font-size: 14px;
 }
+
 .action-btn {
   background: none;
   border: none;
   cursor: pointer;
   font-size: 14px;
-  color: #555;
+  color: #3b3a3a;
   padding: 0;
   transition: color 0.2s;
 }
+
 .action-btn:hover {
-  color: #e0245e;
+  color: #5c001d;
 }
+
 .action-btn.liked {
-  color: #e0245e;
-}
-.status {
-  text-align: center;
-  padding: 20px;
-  font-size: 16px;
-}
-.error {
-  color: #e0245e;
+  color: #5c001d;
 }
 </style>

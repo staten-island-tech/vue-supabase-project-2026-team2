@@ -25,7 +25,6 @@ export const useAuthStore = defineStore('auth', () => {
     supabase.auth.onAuthStateChange((_event, newSession) => {
       session.value = newSession ?? null
       user.value = newSession?.user ?? null
-      // optionally re-fetch profile on sign-in
       if (user.value) {
         supabase
           .from('profiles')
@@ -39,5 +38,19 @@ export const useAuthStore = defineStore('auth', () => {
     })
   }
 
-  return { user, session, profile, loading, init }
+  async function refreshAuth() {
+    const { data } = await supabase.auth.getSession()
+    session.value = data?.session ?? null
+    user.value = session.value?.user ?? null
+    if (user.value) {
+      const { data: pgProfile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.value.id)
+        .single()
+      if (!error) profile.value = pgProfile
+    }
+  }
+
+  return { user, session, profile, loading, init, refreshAuth }
 })

@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import Account from '@/components/Account.vue'
 import Login from '@/components/Login.vue'
 import Register from '@/components/Register.vue'
+import Homepage from '@/components/Homepage.vue'
+import CreatePost from '@/components/createPost.vue'
 
 async function isAuthenticated() {
   const auth = useAuthStore()
-  // if not initialized, init() will restore session/user
   if (!auth.user && !auth.session) {
     await auth.init()
   }
@@ -19,7 +19,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'Home',
-      component: Account,
+      component: Homepage,
       meta: { requiresAuth: true },
     },
     {
@@ -33,21 +33,11 @@ const router = createRouter({
       component: Register,
     },
     {
-      path: '/changeprofile',
-      name: 'ChangeProfile',
-      component: Account,
+      path: '/create-post',
+      name: 'CreatePost',
+      component: CreatePost,
+      meta: { requiresAuth: true },
     },
-
-    /*  {
-      path: '/profile/:user_id',
-      name: 'profile',
-      component: profileView,
-    },
-    {
-      path: '/post/:id',
-      name: 'post',
-      component: postView,
-    }, */
   ],
 })
 router.beforeEach(async (to) => {
