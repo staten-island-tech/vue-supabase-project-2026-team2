@@ -1,4 +1,3 @@
-// ...existing code...
 <template>
   <form class="row flex-center flex" @submit.prevent="handleRegister">
     <div class="col-6 form-widget">
@@ -55,6 +54,7 @@
       </div>
     </div>
   </form>
+    <RouterView />
 </template>
 
 <script setup>
@@ -107,4 +107,3 @@ const handleRegister = async () => {
 </script>
 
 <style scoped></style>
-// ...existing code...
