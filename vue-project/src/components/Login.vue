@@ -116,7 +116,7 @@ form {
   box-shadow: 0 0 0 3px #0066cc26;
 }
 
-.button {
+button {
   font-family: 'Cause', cursive;
   width: 100%;
   padding: 12px;
