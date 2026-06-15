@@ -1,6 +1,6 @@
 <template>
-  <form class="row flex-center flex" @submit.prevent="handleLogin">
-    <div class="form-widget">
+  <form @submit.prevent="startLogin">
+    <div class="container">
       <h1 class="header">Sign In</h1>
       <div>
         <input class="input" type="email" placeholder="Your email" v-model="email" />
@@ -11,15 +11,13 @@
       <div>
         <input
           type="submit"
-          class="button block"
+          class="buttonPrimary"
           :value="loading ? 'Loading...' : 'Sign in'"
           :disabled="loading"
         />
       </div>
       <div class="signUp">
-        <router-link class="button secondary block" :to="{ name: 'Register' }">
-          Sign Up
-        </router-link>
+        <router-link class="buttonSecondary" :to="{ name: 'Register' }"> Sign Up </router-link>
       </div>
     </div>
   </form>
@@ -37,7 +35,7 @@ const password = ref('')
 const router = useRouter()
 const auth = useAuthStore()
 
-const handleLogin = async () => {
+const startLogin = async () => {
   try {
     loading.value = true
     if (!email.value || !password.value) throw new Error('Email and password are required.')
@@ -84,7 +82,7 @@ form {
   margin-top: 0.5rem;
 }
 
-.form-widget {
+.container {
   width: 100%;
   max-width: 380px;
   background: white;
@@ -131,18 +129,17 @@ form {
   text-align: center;
 }
 
-.button.block {
+.buttonSecondary {
+  background: #f5f5f5;
+  color: #333;
   display: block;
   width: 100%;
 }
 
-.button.secondary {
-  background: #f5f5f5;
-  color: #333;
-}
-
-.button:not(.secondary) {
+.buttonPrimary {
   background: #ca998f;
   color: white;
+  display: block;
+  width: 100%;
 }
 </style>
