@@ -116,9 +116,8 @@ form {
   box-shadow: 0 0 0 3px #0066cc26;
 }
 
-button {
+.buttonSecondary {
   font-family: 'Cause', cursive;
-  width: 100%;
   padding: 12px;
   border-radius: 8px;
   border: none;
@@ -127,9 +126,6 @@ button {
   cursor: pointer;
   transition: background 0.2s;
   text-align: center;
-}
-
-.buttonSecondary {
   background: #f5f5f5;
   color: #333;
   display: block;
@@ -137,6 +133,15 @@ button {
 }
 
 .buttonPrimary {
+  font-family: 'Cause', cursive;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: center;
   background: #ca998f;
   color: white;
   display: block;
