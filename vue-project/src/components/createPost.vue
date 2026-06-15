@@ -75,14 +75,14 @@ const handleCreatePost = async () => {
 </script>
 
 <style scoped>
-.dancing-script-<uniquifier > {
+.dancing-script {
   font-family: 'Dancing Script', cursive;
   font-optical-sizing: auto;
   font-weight: <weight>;
   font-style: normal;
 }
 
-.cause-<uniquifier > {
+.cause {
   font-family: 'Cause', cursive;
   font-optical-sizing: auto;
   font-weight: <weight>;
