@@ -3,10 +3,16 @@
     <div class="container">
       <h1 class="header">Sign In</h1>
       <div>
-        <input class="input" type="email" placeholder="Your email" v-model="email" />
+        <input class="input" type="email" placeholder="Your email" v-model="email" required />
       </div>
       <div>
-        <input class="input" type="password" placeholder="Your password" v-model="password" />
+        <input
+          class="input"
+          type="password"
+          placeholder="Your password"
+          v-model="password"
+          required
+        />
       </div>
       <div>
         <input

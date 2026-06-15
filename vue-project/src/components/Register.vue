@@ -8,7 +8,6 @@
       <div>
         <input class="input" type="password" placeholder="Password" v-model="password" required />
       </div>
-
       <div>
         <input
           class="input"
