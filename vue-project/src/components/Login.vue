@@ -1,16 +1,13 @@
 <template>
   <form class="row flex-center flex" @submit.prevent="handleLogin">
-    <div class="col-6 form-widget">
+    <div class="form-widget">
       <h1 class="header">Sign In</h1>
-
       <div>
         <input class="input" type="email" placeholder="Your email" v-model="email" />
       </div>
-
       <div>
         <input class="input" type="password" placeholder="Your password" v-model="password" />
       </div>
-
       <div>
         <input
           type="submit"
@@ -19,8 +16,7 @@
           :disabled="loading"
         />
       </div>
-
-      <div style="margin-top: 0.5rem">
+      <div class="signUp">
         <router-link class="button secondary block" :to="{ name: 'Register' }">
           Sign Up
         </router-link>
@@ -82,6 +78,10 @@ form {
   display: flex;
   justify-content: center;
   padding: 40px 20px;
+}
+
+.signUp {
+  margin-top: 0.5rem;
 }
 
 .form-widget {

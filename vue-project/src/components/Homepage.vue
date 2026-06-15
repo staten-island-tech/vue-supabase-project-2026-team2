@@ -2,30 +2,26 @@
   <div class="container">
     <div class="header">
       <h1>Homepage</h1>
-      <router-link :to="{ name: 'CreatePost' }" class="btn-create-post"> Create Post </router-link>
+      <router-link :to="{ name: 'CreatePost' }" class="createPostBtn"> Create Post </router-link>
     </div>
   </div>
-
   <div v-if="loading">Loading…</div>
   <div v-else-if="errorMsg">{{ errorMsg }}</div>
-
   <div v-else>
-    <article v-for="p in posts" :key="p.id" class="post-card">
+    <div v-for="post in posts" :key="post.id" class="card">
       <div>
-        <div class="timestamp">{{ new Date(p.createdAt).toLocaleString() }}</div>
+        <div class="time">{{ new Date(post.createdAt).toLocaleString() }}</div>
       </div>
-
-      <p class="caption">{{ p.caption }}</p>
-
-      <footer>
-        <div class="actions-row">
-          <button @click="toggleLike(p)" class="action-btn" :class="{ liked: p.isLiked }">
-            {{ p.isLiked ? '❤️' : '♥' }} {{ p.likesCount }} Like
+      <post class="caption">{{ post.caption }}</post>
+      <div>
+        <div class="likes">
+          <button @click="Like(post)" class="likeBtn" :class="{ liked: post.isLiked }">
+            {{ post.isLiked ? '❤️' : '♥' }} {{ post.likesCount }} Like
           </button>
-          <div>💬 {{ p.commentsCount }} Comment</div>
+          <div>💬 {{ post.commentsCount }} Comment</div>
         </div>
-      </footer>
-    </article>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -42,7 +38,7 @@ const auth = useAuthStore()
 const route = useRoute()
 const currentUserId = computed(() => auth.user?.id)
 
-async function loadFeed() {
+async function loadHome() {
   loading.value = true
   errorMsg.value = ''
 
@@ -54,8 +50,6 @@ async function loadFeed() {
       .select('*')
       .order('created_at', { ascending: false })
 
-    console.log('Query result:', { data: simplePosts, error: simpleError })
-
     if (simpleError) {
       errorMsg.value = `Error: ${simpleError.message}`
       loading.value = false
@@ -63,22 +57,20 @@ async function loadFeed() {
     }
 
     if (!simplePosts || simplePosts.length === 0) {
-      errorMsg.value = 'No posts in database. Create one to get started!'
+      errorMsg.value = 'No posts.'
       loading.value = false
       return
     }
-
-    console.log(`Fetching profiles...`)
 
     const authorIds = [...new Set(simplePosts.map((p) => p.author_id).filter(Boolean))]
     const { data: profiles } = await supabase.from('profiles').select('*').in('id', authorIds)
 
     const profileMap = {}
-    profiles?.forEach((p) => {
-      profileMap[p.id] = p
+    profiles?.forEach((post) => {
+      profileMap[post.id] = post
     })
 
-    const postIds = simplePosts.map((p) => p.id)
+    const postIds = simplePosts.map((post) => post.id)
     const { data: likes } = await supabase.from('likes').select('*').in('post_id', postIds)
     const { data: comments } = await supabase.from('comments').select('*').in('post_id', postIds)
 
@@ -107,17 +99,15 @@ async function loadFeed() {
       commentsCount: (commentsMap[row.id] || []).length,
       isLiked: !!userLikesMap[row.id],
     }))
-
-    console.log('Final posts:', posts.value)
   } catch (err) {
-    console.error('Error in loadFeed:', err)
+    console.error('Error', err)
     errorMsg.value = `Error: ${err.message}`
   } finally {
     loading.value = false
   }
 }
 
-async function toggleLike(post) {
+async function Like(post) {
   try {
     if (post.isLiked) {
       await supabase
@@ -140,13 +130,13 @@ async function toggleLike(post) {
   }
 }
 
-onMounted(loadFeed)
+onMounted(loadHome)
 
 watch(
   () => route.name,
   () => {
     if (route.name === 'Home' || route.name === 'DevHomepage') {
-      loadFeed()
+      loadHome()
     }
   },
 )
@@ -188,7 +178,7 @@ watch(
   font-size: 28px;
 }
 
-.btn-create-post {
+.createPostBtn {
   font-family: 'Cause', cursive;
   background: #ca998f;
   color: white;
@@ -200,7 +190,7 @@ watch(
   transition: background 0.2s;
 }
 
-.post-card {
+.card {
   background-color: rgb(248, 246, 244);
   border: 1px solid #eee;
   border-radius: 12px;
@@ -208,7 +198,7 @@ watch(
   margin: 12px 0;
 }
 
-.timestamp {
+.time {
   font-family: 'Cause', cursive;
   font-size: 12px;
   color: #888;
@@ -220,13 +210,13 @@ watch(
   font-size: 15px;
 }
 
-.actions-row {
+.likes {
   display: flex;
   gap: 15px;
   font-size: 14px;
 }
 
-.action-btn {
+.likeBtn {
   background: none;
   border: none;
   cursor: pointer;
@@ -236,11 +226,11 @@ watch(
   transition: color 0.2s;
 }
 
-.action-btn:hover {
+.likeBtn:hover {
   color: #5c001d;
 }
 
-.action-btn.liked {
+.likeBtn.liked {
   color: #5c001d;
 }
 </style>

@@ -2,8 +2,8 @@
   <div class="container">
     <div class="form">
       <h1>Create a Post</h1>
-      <div v-if="errorMsg" class="error-message">{{ errorMsg }}</div>
-      <div class="form-group">
+      <div v-if="errorMsg">{{ errorMsg }}</div>
+      <div>
         <label for="caption">Write something...</label>
         <textarea
           id="caption"
@@ -14,15 +14,14 @@
           :disabled="loading"
         />
       </div>
-
-      <div class="button-group">
-        <button @click="handleCreatePost" class="btn btn-primary" :disabled="loading">
+      <div class="buttonGroup">
+        <button @click="handleCreatePost" class="btn-primary" :disabled="loading">
           {{ loading ? 'Creating...' : 'Create Post' }}
           <svg class="underline" viewBox="0 0 100 4" xmlns="http://www.w3.org/2000/svg">
             <path d="M0 2 Q50 6 100 2" fill="none" stroke="currentColor" stroke-width="2" />
           </svg>
         </button>
-        <router-link :to="{ name: 'Home' }" class="btn btn-secondary"> Cancel </router-link>
+        <router-link :to="{ name: 'Home' }" class="btn-secondary"> Cancel </router-link>
       </div>
     </div>
   </div>
@@ -68,8 +67,6 @@ const handleCreatePost = async () => {
   } catch (err) {
     errorMsg.value = err instanceof Error ? err.message : String(err)
     console.error('Error creating post:', err)
-  } finally {
-    loading.value = false
   }
 }
 </script>
@@ -101,6 +98,7 @@ const handleCreatePost = async () => {
   border-radius: 12px;
   padding: 30px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
 h1 {
@@ -108,10 +106,6 @@ h1 {
   margin-top: 0;
   margin-bottom: 20px;
   font-size: 24px;
-}
-
-.form-group {
-  margin-bottom: 20px;
 }
 
 label {
@@ -142,7 +136,7 @@ label {
   cursor: not-allowed;
 }
 
-.button-group {
+.buttonGroup {
   display: flex;
   gap: 12px;
   margin-top: 20px;
@@ -167,7 +161,7 @@ label {
   transform: translateY(0);
 }
 
-.btn {
+button {
   font-family: 'Cause', cursive;
   flex: 1;
   font-size: 14px;
@@ -190,6 +184,18 @@ label {
 }
 
 .btn-secondary {
+  font-family: 'Cause', cursive;
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  text-decoration: none;
+  text-align: center;
+  position: relative;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
   background: #f5f5f5;
   color: #333;
 }
