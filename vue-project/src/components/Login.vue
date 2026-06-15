@@ -11,13 +11,13 @@
       <div>
         <input
           type="submit"
-          class="buttonPrimary"
+          class="button"
           :value="loading ? 'Loading...' : 'Sign in'"
           :disabled="loading"
         />
       </div>
       <div class="signUp">
-        <router-link class="buttonSecondary" :to="{ name: 'Register' }"> Sign Up </router-link>
+        <router-link class="button secondary" :to="{ name: 'Register' }"> Sign Up </router-link>
       </div>
     </div>
   </form>
