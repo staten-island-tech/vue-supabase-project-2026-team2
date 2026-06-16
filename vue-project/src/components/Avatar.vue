@@ -33,8 +33,8 @@ const uploadAvatar = async (evt) => {
     const filePath = `${Math.random()}.${fileExt}`
 
     let { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file)
-
     if (uploadError) throw uploadError
+
     emit('update:path', filePath)
     emit('upload')
   } catch (error) {
@@ -50,29 +50,28 @@ watch(path, () => {
 </script>
 
 <template>
-  <div>
-    <img
-      v-if="src"
-      :src="src"
-      alt="Avatar"
-      class="avatar image"
-      :style="{ height: size + 'em', width: size + 'em' }"
-    />
-    <div v-else class="avatar no-image" :style="{ height: size + 'em', width: size + 'em' }" />
+  <img
+    v-if="src"
+    :src="src"
+    alt="Avatar"
+    class="avatar"
+    :style="{ height: size + 'em', width: size + 'em' }"
+  />
+  <div
+    v-else
+    class="avatar-placeholder"
+    :style="{ height: size + 'em', width: size + 'em' }"
+  />
 
-    <div :style="{ width: size + 'em' }">
-      <label class="button primary block" for="single">
-        {{ uploading ? 'Uploading ...' : 'Upload' }}
-      </label>
-      <input
-        style="visibility: hidden; position: absolute"
-        type="file"
-        id="single"
-        accept="image/*"
-        @change="uploadAvatar"
-        :disabled="uploading"
-      />
-    </div>
-  </div>
-  <RouterView />
+  <label class="avatar-upload-label" for="avatar-upload">
+    {{ uploading ? 'Uploading...' : 'Change photo' }}
+  </label>
+  <input
+    style="display: none"
+    type="file"
+    id="avatar-upload"
+    accept="image/*"
+    @change="uploadAvatar"
+    :disabled="uploading"
+  />
 </template>

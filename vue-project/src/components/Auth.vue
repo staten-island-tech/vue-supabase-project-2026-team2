@@ -22,22 +22,17 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <form class="row flex-center flex" @submit.prevent="handleLogin">
-    <div class="col-6 form-widget">
-      <h1 class="header">Supabase + Vue 3</h1>
-      <p class="description">Sign in via magic link with your email below</p>
-      <div>
-        <input class="inputField" type="email" placeholder="Your email" v-model="email" />
-      </div>
-      <div>
-        <input
-          type="submit"
-          class="button block"
-          :value="loading ? 'Loading' : 'Send magic link'"
-          :disabled="loading"
-        />
-      </div>
+  <div class="container">
+    <div class="card">
+      <h1>Welcome</h1>
+      <p>Sign in via magic link with your email below</p>
+      <form @submit.prevent="handleLogin">
+        <label for="email">Email address</label>
+        <input id="email" type="email" placeholder="you@example.com" v-model="email" />
+        <button type="submit" class="btn btn-primary" :disabled="loading">
+          {{ loading ? 'Sending...' : 'Send magic link' }}
+        </button>
+      </form>
     </div>
-  </form>
-  <RouterView />
+  </div>
 </template>
